@@ -1,0 +1,25 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: '2025-07-15',
+  devtools: { enabled: true },
+  
+  modules:['@nuxtjs/tailwindcss'],
+
+  router: {
+    options: {
+      scrollBehaviorType: 'smooth'
+    }
+  },
+  
+   runtimeConfig: {
+    notionToken: process.env.NOTION_TOKEN,
+    notionServicesDatabaseId: process.env.NOTION_SERVICES_DATABASE_ID,
+  },
+
+  app: {
+  head: {
+    link: [{ rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap' }]
+  }
+}
+
+})
