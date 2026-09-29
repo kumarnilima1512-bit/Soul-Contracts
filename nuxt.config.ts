@@ -11,9 +11,11 @@ export default defineNuxtConfig({
     }
   },
   
-   runtimeConfig: {
+  runtimeConfig: {
     notionToken: process.env.NOTION_TOKEN,
     notionServicesDatabaseId: process.env.NOTION_SERVICES_DATABASE_ID,
+    notionProfilesDatabaseId: process.env.NOTION_PROFILES_DATABASE_ID,
+    notionCertificatesDatabaseId: process.env.NOTION_CERTIFICATES_DATABASE_ID,
   },
 
   app: {
