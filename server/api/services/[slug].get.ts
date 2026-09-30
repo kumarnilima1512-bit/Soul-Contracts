@@ -1,4 +1,4 @@
-import { getNotionClient, getServicesDataSourceId } from '../../utils/notion'
+import { getNotionClient, getDataSourceId } from '../../utils/notion'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -7,8 +7,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing service slug' })
   }
 
+  const config = useRuntimeConfig()
   const notion = getNotionClient()
-  const dataSourceId = await getServicesDataSourceId()
+  const dataSourceId = await getDataSourceId(config.notionServicesDatabaseId as string)
 
   const response = await notion.dataSources.query({
     data_source_id: dataSourceId,

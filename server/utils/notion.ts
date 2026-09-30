@@ -10,25 +10,21 @@ export function getNotionClient() {
   return notion
 }
 
-// Cache the data source id so we don't fetch it on every request
-let cachedDataSourceId: string | null = null
+const dataSourceCache = new Map<string, string>()
 
-export async function getServicesDataSourceId(): Promise<string> {
-  if (cachedDataSourceId) return cachedDataSourceId
+export async function getDataSourceId(databaseId: string): Promise<string> {
+  if (dataSourceCache.has(databaseId)) {
+    return dataSourceCache.get(databaseId) as string
+  }
 
-  const config = useRuntimeConfig()
   const client = getNotionClient()
-
-  const database = await client.databases.retrieve({
-    database_id: config.notionServicesDatabaseId as string,
-  })
-
+  const database = await client.databases.retrieve({ database_id: databaseId })
   const dataSourceId = (database as any).data_sources?.[0]?.id
 
   if (!dataSourceId) {
-    throw new Error('No data source found for this Notion database')
+    throw new Error(`No data source found for database ${databaseId}`)
   }
 
-  cachedDataSourceId = dataSourceId
+  dataSourceCache.set(databaseId, dataSourceId)
   return dataSourceId
 }
