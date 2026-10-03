@@ -7,16 +7,7 @@ interface Testimonial {
   rating: number
 }
 
-const testimonials = ref<Testimonial[]>([
-  { name: 'Priya S.', category: 'Career', quote: "Aarohi's reading gave me so much clarity about my career path. I feel more confident and at peace now. Highly recommended!", rating: 5 },
-  { name: 'Rohan D.', category: 'Life Guidance', quote: "Her insights are so accurate and comforting. I've always found the guidance I needed. Truly a blessing!", rating: 5 },
-  { name: 'Ananya M.', category: 'Love', quote: 'The reading was deeply personal and helped me see things from a completely new perspective. Thank you so much for your honesty and warmth.', rating: 5 },
-  { name: 'Kabir R.', category: 'Tarot', quote: 'I was skeptical at first, but the session completely changed my mind. Every card felt like it understood exactly where I was in life.', rating: 5 },
-  { name: 'Ishita N.', category: 'Love', quote: 'Gave me the courage to make a decision I had been avoiding for months. Forever grateful.', rating: 5 },
-  { name: 'Arjun T.', category: 'Career', quote: 'The career reading was spot on — within weeks the exact opportunity she mentioned came up, and I took it with confidence.', rating: 5 },
-  { name: 'Meera K.', category: 'Life Guidance', quote: 'Calm, honest, and incredibly insightful. It felt like talking to someone who genuinely wanted the best for me.', rating: 5 },
-  { name: 'Devansh P.', category: 'Tarot', quote: 'Best tarot session I have ever had. Clear, direct, and surprisingly comforting.', rating: 5 },
-])
+const testimonials = ref<Testimonial[]>([])
 
 const categories = ['All', 'Love', 'Career', 'Life Guidance', 'Tarot'] as const
 const formCategories = ['Love', 'Career', 'Life Guidance', 'Tarot'] as const
@@ -182,7 +173,7 @@ onMounted(() => {
         </TransitionGroup>
 
         <p v-if="filteredTestimonials.length === 0" class="text-center text-[#8C7A9C] text-sm py-16 w-full">
-          No testimonials in this category yet.
+          No reviews yet. Be the first to share your experience!
         </p>
       </div>
     </section>
@@ -269,7 +260,7 @@ onMounted(() => {
       <p class="text-[#6B6270] text-sm mb-8">
         Book a session and see what clarity feels like.
       </p>
-      <NuxtLink to="/#contact" class="inline-flex items-center gap-2 bg-[#8C6FB0] text-white font-medium px-8 py-3 rounded-full text-sm hover:bg-[#7a5b9c] transition-colors duration-200">
+      <NuxtLink to="/contact" class="inline-flex items-center gap-2 bg-[#8C6FB0] text-white font-medium px-8 py-3 rounded-full text-sm hover:bg-[#7a5b9c] transition-colors duration-200">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="5" width="18" height="16" rx="2" />
           <path d="M16 3v4M8 3v4M3 10h18" />
