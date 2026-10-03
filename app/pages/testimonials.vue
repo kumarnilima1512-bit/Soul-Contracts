@@ -1,19 +1,21 @@
 <!-- pages/testimonials.vue -->
 <script setup lang="ts">
 interface Testimonial {
+  id: string
   name: string
-  category: 'Love' | 'Career' | 'Life Guidance' | 'Tarot'
+  category: string
   quote: string
   rating: number
 }
 
-const testimonials = ref<Testimonial[]>([])
+const { data: testimonials, refresh } = await useFetch<Testimonial[]>('/api/testimonials')
 
 const categories = ['All', 'Love', 'Career', 'Life Guidance', 'Tarot'] as const
 const formCategories = ['Love', 'Career', 'Life Guidance', 'Tarot'] as const
 const activeCategory = ref<typeof categories[number]>('All')
 
 const filteredTestimonials = computed(() => {
+  if (!testimonials.value) return []
   if (activeCategory.value === 'All') return testimonials.value
   return testimonials.value.filter((t) => t.category === activeCategory.value)
 })
@@ -24,7 +26,6 @@ const stats = [
   { number: '98%', label: 'Would Recommend' },
 ]
 
-// --- Review form state ---
 const form = reactive({
   name: '',
   category: 'Tarot' as typeof formCategories[number],
@@ -34,8 +35,9 @@ const form = reactive({
 
 const submitted = ref(false)
 const errorMsg = ref('')
+const submitting = ref(false)
 
-const submitReview = () => {
+const submitReview = async () => {
   errorMsg.value = ''
 
   if (!form.name.trim() || !form.quote.trim()) {
@@ -43,31 +45,32 @@ const submitReview = () => {
     return
   }
 
-  // NOTE: this only updates local state for now.
-  // Once a backend/Notion database is connected, replace this
-  // with an API call, e.g.:
-  // await $fetch('/api/testimonials', { method: 'POST', body: { ...form } })
-  testimonials.value.unshift({
-    name: form.name.trim(),
-    category: form.category,
-    quote: form.quote.trim(),
-    rating: form.rating,
-  })
+  submitting.value = true
+  try {
+    await $fetch('/api/testimonials', {
+      method: 'POST',
+      body: { ...form },
+    })
 
-  form.name = ''
-  form.quote = ''
-  form.rating = 5
-  form.category = 'Tarot'
+    form.name = ''
+    form.quote = ''
+    form.rating = 5
+    form.category = 'Tarot'
 
-  submitted.value = true
-  setTimeout(() => (submitted.value = false), 3000)
+    submitted.value = true
+    setTimeout(() => (submitted.value = false), 3000)
+
+    await refresh()
+  } catch (e) {
+    errorMsg.value = 'Something went wrong. Please try again.'
+  } finally {
+    submitting.value = false
+  }
 }
 
-// Hero entrance
 const heroVisible = ref(false)
 onMounted(() => requestAnimationFrame(() => (heroVisible.value = true)))
 
-// Scroll-reveal
 const revealEls = ref<HTMLElement[]>([])
 const addRevealEl = (el: any) => {
   if (el && !revealEls.value.includes(el)) revealEls.value.push(el)
@@ -92,7 +95,6 @@ onMounted(() => {
   <div class="min-h-screen bg-[#1E1424] font-sans overflow-x-hidden">
     <LayoutAppHeader />
 
-    <!-- Hero -->
     <section class="relative pt-32 pb-14 px-6 overflow-hidden">
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] bg-[#3A2748] rounded-full blur-3xl opacity-40"></div>
 
@@ -122,7 +124,6 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- Filter tags -->
     <section class="px-6 pt-6 pb-8">
       <div class="max-w-6xl mx-auto flex flex-wrap justify-center gap-3">
         <button
@@ -139,21 +140,16 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- Horizontal scroll wall -->
     <section class="pb-20">
       <div class="max-w-6xl mx-auto px-6 mb-6">
         <p class="text-xs text-[#8C7A9C] text-center">Swipe or scroll to see more &rarr;</p>
       </div>
 
       <div class="overflow-x-auto scrollbar-hide px-6">
-        <TransitionGroup
-          tag="div"
-          name="fade-list"
-          class="flex gap-5 w-max pb-4"
-        >
+        <TransitionGroup tag="div" name="fade-list" class="flex gap-5 w-max pb-4">
           <div
             v-for="t in filteredTestimonials"
-            :key="t.name + t.quote.slice(0, 10)"
+            :key="t.id"
             class="bg-[#2A1D33] border border-white/10 rounded-2xl p-6 flex flex-col justify-between w-72 md:w-80 shrink-0"
           >
             <div>
@@ -178,7 +174,6 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- Leave a Review -->
     <section :ref="addRevealEl" class="reveal bg-[#2A1D33] py-20 px-6">
       <div class="max-w-2xl mx-auto">
         <div class="text-center mb-10">
@@ -244,15 +239,15 @@ onMounted(() => {
 
           <button
             type="submit"
-            class="mx-auto block bg-[#D9A65C] text-[#1E1424] font-medium px-6 py-2.5 rounded-full text-xs hover:bg-[#c99648] transition-colors duration-200"
+            :disabled="submitting"
+            class="mx-auto block bg-[#D9A65C] text-[#1E1424] font-medium px-6 py-2.5 rounded-full text-xs hover:bg-[#c99648] transition-colors duration-200 disabled:opacity-50"
           >
-            Submit Review
+            {{ submitting ? 'Submitting...' : 'Submit Review' }}
           </button>
         </form>
       </div>
     </section>
 
-    <!-- CTA -->
     <section :ref="addRevealEl" class="reveal bg-[#F7F1E8] py-20 px-6 text-center">
       <h2 class="font-serif text-3xl md:text-4xl text-[#1E1424] mb-4">
         Ready to Write Your Own Story?
@@ -274,38 +269,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.font-serif {
-  font-family: 'Playfair Display', 'Georgia', serif;
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-.reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.fade-list-enter-active,
-.fade-list-leave-active {
-  transition: all 0.3s ease;
-}
-.fade-list-enter-from,
-.fade-list-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
-.fade-list-move {
-  transition: transform 0.3s ease;
-}
-
-.scrollbar-hide {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+.font-serif { font-family: 'Playfair Display', 'Georgia', serif; }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.reveal-visible { opacity: 1; transform: translateY(0); }
+.fade-list-enter-active, .fade-list-leave-active { transition: all 0.3s ease; }
+.fade-list-enter-from, .fade-list-leave-to { opacity: 0; transform: scale(0.95); }
+.fade-list-move { transition: transform 0.3s ease; }
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
 </style>

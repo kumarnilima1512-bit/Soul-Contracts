@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     notionServicesDatabaseId: process.env.NOTION_SERVICES_DATABASE_ID,
     notionProfilesDatabaseId: process.env.NOTION_PROFILES_DATABASE_ID,
     notionCertificatesDatabaseId: process.env.NOTION_CERTIFICATES_DATABASE_ID,
+    adminPassword: process.env.ADMIN_PASSWORD,
   },
 
   app: {
