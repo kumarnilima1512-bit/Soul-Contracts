@@ -1,11 +1,8 @@
-import { getNotionClient, getDataSourceId } from '../../utils/notion'
+import { getNotionClient, getDataSourceId, getPageContent } from '../../utils/notion'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
-
-  if (!slug) {
-    throw createError({ statusCode: 400, statusMessage: 'Missing service slug' })
-  }
+  if (!slug) throw createError({ statusCode: 400, statusMessage: 'Missing service slug' })
 
   const config = useRuntimeConfig()
   const notion = getNotionClient()
@@ -13,19 +10,14 @@ export default defineEventHandler(async (event) => {
 
   const response = await notion.dataSources.query({
     data_source_id: dataSourceId,
-    filter: {
-      property: 'Slug',
-      rich_text: { equals: slug },
-    },
+    filter: { property: 'Slug', rich_text: { equals: slug } },
   })
 
   const page = response.results[0] as any
-
-  if (!page) {
-    throw createError({ statusCode: 404, statusMessage: 'Service not found' })
-  }
+  if (!page) throw createError({ statusCode: 404, statusMessage: 'Service not found' })
 
   const props = page.properties
+  const content = await getPageContent(page.id)
 
   return {
     slug: props.Slug?.rich_text?.[0]?.plain_text ?? '',
@@ -34,13 +26,11 @@ export default defineEventHandler(async (event) => {
     icon: props.Icon?.rich_text?.[0]?.plain_text ?? '✦',
     price: props.Price?.rich_text?.[0]?.plain_text ?? '',
     description: props.Description?.rich_text?.[0]?.plain_text ?? '',
-    includes: (props.Includes?.rich_text?.[0]?.plain_text ?? '')
+    points: (props.Includes?.rich_text?.[0]?.plain_text ?? '')
       .split('\n')
       .map((s: string) => s.trim())
       .filter(Boolean),
-    image:
-      props.Image?.files?.[0]?.file?.url ??
-      props.Image?.files?.[0]?.external?.url ??
-      '',
+    image: props.Image?.files?.[0]?.file?.url ?? props.Image?.files?.[0]?.external?.url ?? '',
+    content,
   }
 })

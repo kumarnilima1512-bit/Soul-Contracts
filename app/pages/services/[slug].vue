@@ -1,19 +1,21 @@
+<!-- pages/services/[slug].vue -->
 <script setup lang="ts">
-interface Service {
+interface ServiceDetail {
   slug: string
   title: string
   tagline: string
   icon: string
   price: string
   description: string
-  includes: string[]
+  points: string[]
   image: string
+  content: string[]
 }
 
 const route = useRoute()
 const slug = route.params.slug as string
 
-const { data: service, pending, error } = await useFetch<Service>(`/api/services/${slug}`)
+const { data: service, pending, error } = await useFetch<ServiceDetail>(`/api/services/${slug}`)
 </script>
 
 <template>
@@ -35,7 +37,7 @@ const { data: service, pending, error } = await useFetch<Service>(`/api/services
           &larr; Back to all readings
         </NuxtLink>
 
-        <div class="grid md:grid-cols-[auto_1fr] gap-6 items-center mt-6 mb-10">
+        <div class="grid md:grid-cols-[auto_1fr] gap-6 items-center mt-6 mb-8">
           <div class="w-16 h-16 rounded-full border border-[#D9A65C]/40 flex items-center justify-center text-2xl text-[#D9A65C]">
             {{ service.icon }}
           </div>
@@ -52,23 +54,32 @@ const { data: service, pending, error } = await useFetch<Service>(`/api/services
         <div class="grid md:grid-cols-[1fr_auto] gap-8 items-start">
           <div>
             <h2 class="font-serif text-xl text-[#F7F1E8] mb-3">About This Reading</h2>
-            <p class="text-sm text-[#C9BFAF] leading-relaxed whitespace-pre-line mb-8">{{ service.description }}</p>
+            <p class="text-sm text-[#C9BFAF] leading-relaxed mb-8">{{ service.description }}</p>
 
-            <template v-if="service.includes.length">
+            <template v-if="service.points.length">
               <h2 class="font-serif text-xl text-[#F7F1E8] mb-3">What's Included</h2>
-              <ul class="flex flex-col gap-2">
-                <li v-for="point in service.includes" :key="point" class="flex items-center gap-2 text-sm text-[#E7DDD0]">
+              <ul class="flex flex-col gap-2 mb-8">
+                <li v-for="point in service.points" :key="point" class="flex items-center gap-2 text-sm text-[#E7DDD0]">
                   <span class="text-[#D9A65C]">✦</span>{{ point }}
                 </li>
               </ul>
+            </template>
+
+            <!-- Free-form content written inside the Notion page itself -->
+            <template v-if="service.content?.length">
+              <h2 class="font-serif text-xl text-[#F7F1E8] mb-3">More Details</h2>
+              <div class="flex flex-col gap-3">
+                <p v-for="(line, i) in service.content" :key="i" class="text-sm text-[#C9BFAF] leading-relaxed">
+                  {{ line }}
+                </p>
+              </div>
             </template>
           </div>
 
           <div class="bg-[#2A1D33] border border-white/10 rounded-2xl p-6 w-full md:w-64">
             <p class="text-[10px] uppercase tracking-wide text-[#8C7A9C] mb-1">Price</p>
-            <p class="font-serif text-2xl text-[#D9A65C] mb-4">{{ service.price }}</p>
+            <p class="font-serif text-2xl text-[#D9A65C] mb-6">{{ service.price }}</p>
 
-            
             <NuxtLink
               to="/contact"
               class="block text-center bg-[#D9A65C] text-[#1E1424] font-medium px-5 py-2.5 rounded-full text-xs hover:bg-[#c99648] transition-colors duration-200"

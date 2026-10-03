@@ -1,5 +1,6 @@
 <!-- app.vue -->
 <script setup lang="ts">
+const route = useRoute()
 const router = useRouter()
 
 router.options.scrollBehavior = (to, from, savedPosition) => {
@@ -8,10 +9,10 @@ router.options.scrollBehavior = (to, from, savedPosition) => {
       setTimeout(() => {
         resolve({
           el: to.hash,
-          top: 80, // navbar height offset
+          top: 80,
           behavior: 'smooth',
         })
-      }, 300) // page transition/mount wait
+      }, 300)
     })
   }
   if (savedPosition) {
@@ -23,6 +24,6 @@ router.options.scrollBehavior = (to, from, savedPosition) => {
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage :page-key="route.fullPath" />
   </NuxtLayout>
 </template>

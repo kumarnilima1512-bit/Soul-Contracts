@@ -15,8 +15,17 @@ export default defineEventHandler(async () => {
       slug: props.Slug?.rich_text?.[0]?.plain_text ?? '',
       title: props.Name?.title?.[0]?.plain_text ?? '',
       tagline: props.Tagline?.rich_text?.[0]?.plain_text ?? '',
+      description: props.Description?.rich_text?.[0]?.plain_text ?? '',
       icon: props.Icon?.rich_text?.[0]?.plain_text ?? '✦',
       price: props.Price?.rich_text?.[0]?.plain_text ?? '',
+      points: (props.Includes?.rich_text?.[0]?.plain_text ?? '')
+        .split('\n')
+        .map((s: string) => s.trim())
+        .filter(Boolean),
+      image:
+        props.Image?.files?.[0]?.file?.url ??
+        props.Image?.files?.[0]?.external?.url ??
+        '',
     }
   })
 })

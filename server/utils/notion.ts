@@ -28,3 +28,42 @@ export async function getDataSourceId(databaseId: string): Promise<string> {
   dataSourceCache.set(databaseId, dataSourceId)
   return dataSourceId
 }
+
+export function getRichText(richText: any[] = []): string {
+  return richText
+    .map((item) => item.plain_text ?? item.text?.content ?? '')
+    .join('')
+    .trim()
+}
+
+export async function getPageContent(pageId: string): Promise<string[]> {
+  const notion = getNotionClient()
+  const blocks: string[] = []
+
+  const fetchBlocks = async (blockId: string) => {
+    let cursor: string | undefined = undefined
+
+    do {
+      const blockResponse = await notion.blocks.children.list({
+        block_id: blockId,
+        start_cursor: cursor,
+      })
+
+      for (const block of blockResponse.results as any[]) {
+        if (block.type && block[block.type]?.rich_text) {
+          const text = getRichText(block[block.type].rich_text)
+          if (text) blocks.push(text)
+        }
+
+        if (block.has_children) {
+          await fetchBlocks(block.id)
+        }
+      }
+
+      cursor = blockResponse.has_more ? (blockResponse.next_cursor ?? undefined) : undefined
+    } while (cursor)
+  }
+
+  await fetchBlocks(pageId)
+  return blocks
+}
