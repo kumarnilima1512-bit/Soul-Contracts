@@ -13,9 +13,9 @@ interface SocialLink {
 }
 
 const contactInfo: ContactInfo[] = [
-  { label: 'Email', value: 'hello@soulcontracts.com', icon: 'mail' },
-  { label: 'Phone', value: '+91 98765 43210', icon: 'phone' },
-  { label: 'Location', value: 'Online / Video Call Sessions', icon: 'location' },
+  { label: 'Email', value: 'coontact@soulcontracts.com', icon: 'mail' },
+  { label: 'Phone', value: '+91 ', icon: 'phone' },
+  { label: 'Location', value: 'Online Chats/ Voice Call Sessions', icon: 'location' },
   { label: 'Availability', value: 'Mon – Sat, 10 AM – 7 PM', icon: 'clock' },
 ]
 
