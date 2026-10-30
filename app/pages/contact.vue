@@ -12,16 +12,19 @@ interface SocialLink {
   icon: 'instagram' | 'whatsapp' | 'facebook'
 }
 
+
+const WHATSAPP_NUMBER = '918240946460'
+
 const contactInfo: ContactInfo[] = [
-  { label: 'Email', value: 'coontact@soulcontracts.com', icon: 'mail' },
-  { label: 'Phone', value: '+91 ', icon: 'phone' },
+  { label: 'Email', value: 'admin.soulcontracts@gmail.com', icon: 'mail' },
+  { label: 'Phone', value: '+91 8240946460', icon: 'phone' },
   { label: 'Location', value: 'Online Chats/ Voice Call Sessions', icon: 'location' },
   { label: 'Availability', value: 'Mon – Sat, 10 AM – 7 PM', icon: 'clock' },
 ]
 
 const socialLinks: SocialLink[] = [
   { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
-  { label: 'WhatsApp', href: 'https://wa.me/', icon: 'whatsapp' },
+  { label: 'WhatsApp', href: `https://wa.me/${WHATSAPP_NUMBER}`, icon: 'whatsapp' },
   { label: 'Facebook', href: 'https://facebook.com', icon: 'facebook' },
 ]
 
@@ -44,17 +47,33 @@ const form = reactive({
   message: '',
 })
 
-const serviceOptions = ['Tarot Reading', 'Numerology', 'Vedic Chart', 'Crystal Healing', 'Energy Healing', 'Not Sure Yet']
+const serviceOptions = ['Tarot Reading', 'Numerology', 'Vedic Chart', 'Crystal Healing', 'Energy Healing', 'Spell Work','Not Sure Yet']
 
 const submitted = ref(false)
 const errorMsg = ref('')
 
 const submitForm = () => {
   errorMsg.value = ''
-  if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-    errorMsg.value = 'Please fill in your name, email, and message.'
+  if (!form.name.trim() || !form.message.trim()) {
+    errorMsg.value = 'Please fill in your name and message.'
     return
   }
+
+  const text = [
+    `Hello! I'd like to reach out.`,
+    ``,
+    `*Name:* ${form.name.trim()}`,
+    form.email.trim() ? `*Email:* ${form.email.trim()}` : '',
+    `*Interested In:* ${form.service}`,
+    ``,
+    `*Message:*`,
+    form.message.trim(),
+  ]
+    .filter((line, i, arr) => line !== '' || arr[i - 1] !== '')
+    .join('\n')
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`
+  window.open(url, '_blank', 'noopener')
 
   submitted.value = true
   form.name = ''
@@ -92,7 +111,7 @@ onMounted(() => {
   <div class="min-h-screen bg-[#1E1424] font-sans overflow-x-hidden">
     <LayoutAppHeader />
 
-    <section class="relative pt-32 pb-10 px-6 overflow-hidden">
+    <section class="relative pt-32 pb-16 md:pb-24 px-6 overflow-hidden">
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] bg-[#3A2748] rounded-full blur-3xl opacity-40"></div>
 
       <Transition
@@ -189,7 +208,7 @@ onMounted(() => {
                 />
               </div>
               <div class="flex flex-col gap-2">
-                <label for="c-email" class="text-xs uppercase tracking-wide text-[#8C7A9C]">Email</label>
+                <label for="c-email" class="text-xs uppercase tracking-wide text-[#8C7A9C]">Email (optional)</label>
                 <input
                   id="c-email"
                   v-model="form.email"
@@ -223,13 +242,13 @@ onMounted(() => {
             </div>
 
             <p v-if="errorMsg" class="text-xs text-[#D9A5A0]">{{ errorMsg }}</p>
-            <p v-if="submitted" class="text-xs text-[#7FBF9F]">Thank you! Your message has been sent.</p>
+            <p v-if="submitted" class="text-xs text-[#7FBF9F]">Opening WhatsApp with your message...</p>
 
             <button
               type="submit"
               class="self-start inline-flex items-center gap-2 bg-[#D9A65C] text-[#1E1424] font-medium px-6 py-2.5 rounded-full text-xs hover:bg-[#c99648] transition-colors duration-200"
             >
-              Send Message
+              Send via WhatsApp
             </button>
           </form>
         </div>
