@@ -21,7 +21,12 @@ export default defineNuxtConfig({
 
   app: {
   head: {
-    link: [{ rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap' }]
+    link: [
+       
+        { rel: 'icon', type: 'image/png', href: '/images/logo/logo.png' },
+        { rel: 'apple-touch-icon', href: '/images/logo/logo.png' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap' }
+      ]
   }
 }
 

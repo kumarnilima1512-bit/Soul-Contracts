@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 const navLinks = [
   { label: 'Home', to: '/' },
