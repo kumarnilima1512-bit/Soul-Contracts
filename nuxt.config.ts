@@ -3,7 +3,18 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   
-  modules:['@nuxtjs/tailwindcss'],
+  modules:['@nuxtjs/tailwindcss','@nuxtjs/sitemap'
+],
+
+  site: {
+    url: 'https://soul-contracts.vercel.app',
+    name: 'Soul Contracts'
+  },
+ 
+  sitemap: {
+    
+    exclude: ['/admin/**']
+  },
 
   router: {
     options: {
