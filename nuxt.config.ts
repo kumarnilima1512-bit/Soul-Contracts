@@ -32,8 +32,12 @@ export default defineNuxtConfig({
 
   app: {
   head: {
+    title: 'Soul Contracts',
+    meta: [
+      { name: 'google-site-verification', content: 'google540a9dc726acd981.html' }
+    ],
     link: [
-       
+      
         { rel: 'icon', type: 'image/png', href: '/images/logo/logo.png' },
         { rel: 'apple-touch-icon', href: '/images/logo/logo.png' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap' }
